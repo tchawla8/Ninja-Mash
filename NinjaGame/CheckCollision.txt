@@ -1,0 +1,65 @@
+class Collision{
+PImage player;
+PVector aabb[],player_pos;
+
+//NinjaPlayer shuriken;
+
+public Collision(String collisionBox,PVector location)
+{
+  //shuriken=new NinjaPlayer();
+   imageMode(CENTER);
+ aabb=new PVector[4];
+player=loadImage(collisionBox);
+ player_pos=location;
+ aabb[0]=new PVector(player_pos.x-(player.width/2),player_pos.y-(player.height/2));
+ aabb[1]=new PVector(aabb[0].x,aabb[0].y+player.height);
+ aabb[2]=new PVector(aabb[0].x+player.width,aabb[0].y);
+ aabb[3]=new PVector(aabb[0].x+player.width,aabb[0].y+player.height);
+}
+
+/*Purely for testing purpose
+public void displayCollisionBox()
+{
+//top left
+point(aabb[0].x,aabb[0].y);
+//bottom left
+point(aabb[1].x,aabb[1].y);
+//top right
+point(aabb[2].x,aabb[2].y);
+//bottom right
+point(aabb[3].x,aabb[3].y);
+
+//left line
+line(aabb[0].x,aabb[0].y,aabb[1].x,aabb[1].y);
+//top line
+line(aabb[0].x,aabb[0].y,aabb[2].x,aabb[2].y);
+//right line
+line(aabb[2].x,aabb[2].y,aabb[3].x,aabb[3].y);
+//bottom line
+line(aabb[1].x,aabb[1].y,aabb[3].x,aabb[3].y);
+}
+*/
+
+public void createCollisionBox()
+{
+ aabb[0].x=player_pos.x-(player.width/2); 
+ aabb[0].y=player_pos.y-(player.height/2);
+ aabb[1].x=aabb[0].x;
+ aabb[1].y=aabb[0].y+player.height;
+ aabb[2].x=aabb[0].x+player.width;
+ aabb[2].y=aabb[0].y;
+ aabb[3].x=aabb[0].x+player.width;
+ aabb[3].y=aabb[0].y+player.height;
+}
+
+public boolean checkCollision(PVector obj1)
+{
+  if(obj1.x<aabb[2].x && obj1.x>aabb[0].x && obj1.y>aabb[0].y && obj1.y<aabb[1].y)
+  {
+return true;
+  }
+else
+return false;
+}
+
+}

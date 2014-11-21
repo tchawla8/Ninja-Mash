@@ -1,0 +1,55 @@
+class IceWall
+{
+  PVector i_pos;
+int iceWallHealth,i;
+PImage icewall;
+boolean b_iceCollided;
+HUD hud;
+  public IceWall(PVector icepos, HUD hud)
+{
+this.hud=hud;
+icewall=loadImage("C:\\Users\\Matrix\\Documents\\Processing\\ninja_mash\\ImageCode\\animation\\ninja_attack\\icewall.png");
+i_pos=new PVector(icepos.x,icepos.y);
+iceWallHealth=100;
+}
+
+public void takeDamage()
+{
+iceWallHealth-=20;
+}
+
+public boolean checkIceWallDead()
+{
+
+if(iceWallHealth<=0)
+{
+return true;
+}
+
+else
+return false;
+}
+
+public void checkIceCollision(EvilController ec)
+{
+for(i=0;i<=ec.eh.size()-1;i++)
+{
+if(ec.eh.get(i).evilCollision(i_pos))
+{
+  ec.eh.remove(i);
+  ec.kills++;
+  if(ec.kills>=ec.highscore)
+  ec.highscore=ec.kills;
+  takeDamage();
+  break;
+}
+}}
+
+void displayIceWall()
+{
+image(icewall,i_pos.x,i_pos.y);
+hud.updateIceWallHealth(iceWallHealth);
+hud.displayIceWallHealth(i_pos);
+}
+
+}

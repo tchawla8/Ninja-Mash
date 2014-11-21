@@ -1,0 +1,57 @@
+class EvilHead 
+{
+Animate evil_run,evil_dead;
+Collision evilcollision;
+boolean left;
+PVector loc,velocity,destination,bvec;
+
+public EvilHead(boolean left,PVector loc,PVector velocity)
+{
+  
+  this.left=left;
+  this.loc=loc;
+  //evilcollision=new Collision("C:\\Users\\TC0C44772\\Desktop\\ninja_mash\\eh_run\\eh_run0001.png",loc);
+evilcollision=new Collision("C:\\Users\\Matrix\\Documents\\Processing\\ninja_mash\\ImageCode\\animation\\eh_run\\eh_run0001.png",loc);
+ this.velocity=velocity;
+ destination=new PVector(displayWidth/2,displayHeight/2);
+ bvec=new PVector(0,0);
+evil_run=new Animate("C:\\Users\\Matrix\\Documents\\Processing\\ninja_mash\\ImageCode\\animation\\eh_run\\eh_run000",21);
+evil_dead=new Animate("C:\\Users\\Matrix\\Documents\\Processing\\ninja_mash\\ImageCode\\animation\\eh_die\\evildead000",21);
+
+//evil_run=new Animate("C:\\Users\\TC0C44772\\Desktop\\ninja_mash\\eh_run\\eh_run000",21);
+//evil_dead=new Animate("C:\\Users\\TC0C44772\\Desktop\\ninja_mash\\eh_die\\evildead000",21);
+}
+
+public void spawn()
+{
+evil_run.display(left,loc);
+}
+
+public void enemyRun()
+{
+bvec.x=destination.x-loc.x;
+bvec.normalize();
+bvec.x*=velocity.x;
+loc.x+=bvec.x;
+}
+
+public void createCollision()
+{
+  evilcollision.createCollisionBox();
+}
+
+public boolean evilCollision(PVector loc)
+{
+return(evilcollision.checkCollision(loc));
+}
+
+public boolean evilDead()
+{
+evil_dead.display(left,loc);
+if(evil_dead.checkAnimationEnd())
+return true;
+else
+return false;
+}
+
+}

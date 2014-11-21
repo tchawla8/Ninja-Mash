@@ -1,0 +1,213 @@
+class NinjaControl extends NinjaPlayer
+{
+int i,w,j;
+boolean left=true,b_jumping,b_keyHold,b_isAttacking,b_mouseHold,b_sideCheck,b_shuriken,b_iceWall,b_evilCollided,b_artifact;
+Timer t1;
+public NinjaControl()
+{
+super();
+t1=new Timer();
+//s_left=s_right=true;
+b_keyHold=false;
+b_mouseHold=false;
+b_iceWall=false;
+b_isAttacking=false;
+b_jumping=false;
+b_evilCollided=false;
+b_artifact=false;
+w=0;
+}
+
+
+
+public boolean checkShurikenCollision(EvilController ec)
+{
+for(i=0;i<=ec.eh.size()-1;i++)
+{
+if(ec.eh.get(i).evilCollision(s_pos))
+{
+  //ec.totalenemycount--;
+  b_evilCollided=true;
+  ec.dead.add(ec.eh.get(i));
+  ec.eh.remove(i);
+  ec.kills++;
+  if(ec.kills>=ec.highscore)
+      ec.highscore=ec.kills;
+break;
+}
+else 
+b_evilCollided=false;
+}
+if(ec.dead.size()!=0)
+{
+ec.playDead();
+}
+return b_evilCollided;
+}
+
+
+public void checkInput(NinjaLevel nl,EvilController ec)
+{
+ 
+  //text(str(shuriken_num),600,600);
+  
+  if(b_shuriken && shuriken_num!=0)
+{
+  
+   ninjaShuriken();
+if(left)
+{
+throwShuriken(-1);
+}
+else if(!left )
+{
+  throwShuriken(1);
+}
+if(checkSides(s_pos) || (checkShurikenCollision(ec)&& ec.eh.size()!=0))
+{
+b_shuriken=false;
+}
+}
+ else 
+{
+b_shuriken=false;
+}
+
+if(iw.size()!=0)
+{
+for(j=0;j<=iw.size()-1;j++)
+{
+ iw.get(j).checkIceCollision(ec);
+  iw.get(j).displayIceWall();
+  if(iw.get(j).checkIceWallDead())
+ iw.remove(j);
+ } 
+  }
+  
+    createCollision();
+  b_artifact=checkCollision(nl.artifactpos);
+  if( b_artifact &&!keyPressed &&!mousePressed)
+  {ninjaRestore(left);
+    //RESTORE ARTIFACT HEALTH SLOWLY IF PLAYER ON ARTIFACT AND IS NOT MOVING
+  if(t1.delayTime(500))
+ hud.updateHealth(nl.takeDamage(+3));
+  }
+
+  
+ //add !mousepressed for checking mouse events while running and to stop running procedures
+else if(keyPressed  && !mousePressed && (key=='a'||key=='A'||key=='D'||key=='d'||key==' ') && !b_jumping && !b_keyHold && (!b_shuriken||!b_iceWall) && !b_isAttacking)
+{
+ /*now check each condition for the keys 
+ and find the matching keys , if keys match the 
+ particular function takes place*/
+if(key=='a'||key=='A')
+{ 
+  left=true;
+ninjaRun(key);
+
+playerRun(-1);
+}  
+else if(key=='d'||key=='D')
+{
+  left=false;
+ninjaRun(key);
+playerRun(1);
+}
+else if(key==' ')
+{
+  
+j_force=1000;
+b_jumping=true;
+}
+
+/* At the end of the draw cycle check the sides of the screen so 
+that the player does not move out of the screen or game area*/
+b_sideCheck=checkSides(run_pos);
+}
+
+
+/*GOING TO CHECK FOR MOUSE CLICKS THAT LEAD TO PLAYING ATTACK ANIMATIONS AND FURTHER CHECKING.....*/
+else if( mousePressed && (mouseButton==37||mouseButton==39) && !b_jumping && !b_mouseHold && !b_isAttacking && (!b_shuriken||!b_iceWall) && !b_artifact)
+{
+  b_isAttacking=true;
+
+if(w==0)
+{
+ setShuriken();
+ b_shuriken=true;
+ --shuriken_num;
+ if(shuriken_num<0)
+ shuriken_num=0;
+}
+
+else if(w==1)
+{
+b_iceWall=true;
+iceWall_num--;
+if(iceWall_num<0)
+iceWall_num=0;
+}
+
+ }
+
+else if(b_jumping==true&&!b_keyHold)
+{
+   if(j_force>0)
+  ninjaJumpRise(left);
+  else 
+  ninjaJumpFall(left);
+startJump(); 
+if(checkFloor()==1 && keyPressed && key==' ')
+{
+b_jumping=false;
+b_keyHold=true;
+}
+
+else if(checkFloor()==1 && ((keyPressed && key!=' ') || !keyPressed))
+{
+b_jumping=false;
+b_keyHold=false;
+}}
+
+else if(b_isAttacking && !b_mouseHold)
+{
+  
+  switch(w)
+  {
+case 0:ninjaAttack(left);
+ if(nthrow.checkAnimationEnd() && (mousePressed))
+ {
+ b_mouseHold=true;
+ b_isAttacking=false;
+ }
+ else if(nthrow.checkAnimationEnd())
+ {
+ b_mouseHold=false;
+ b_isAttacking=false;
+ }
+ break;
+ 
+ case 1:
+ ninjaIceWall(left);
+ if(icethrow.checkFrame(36) && iceWall_num>0)
+ iw.add(new IceWall(run_pos,hud));
+ if(icethrow.checkAnimationEnd() && mousePressed)
+ {
+  b_mouseHold=true;
+ b_isAttacking=false;
+ }
+ else if(icethrow.checkAnimationEnd())
+ {
+  b_mouseHold=false;
+ b_isAttacking=false;
+}
+ 
+ break;
+  }
+ 
+}
+else
+ninjaIdeal(left);
+
+ }
+}

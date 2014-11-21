@@ -1,0 +1,194 @@
+ class NinjaPlayer{
+protected Animate run,ideal,attack,jump_rise,jump_fall,nthrow,shuriken,restore,icethrow;
+ PVector run_pos,velocity,s_pos;
+ int shuriken_num,iceWall_num;
+ ArrayList<IceWall> iw;
+protected Collision playercol;
+protected float g_force,floorZ,rightSide; //gravitational force applied on ninja by default 90
+public float j_force;//jump force set when pressing spacebar by default 1000
+public NinjaPlayer()
+{
+  /* THIS CONSTRUCTOR IS USED TO INITIALIZE THE ANIMATIONS CORRESPONDING TO THE NINJA. 
+  Running animations,ideal animations, attack animations,etc....and the initial position of the ninja with its velocity 
+  also specifing the frameCount(the number of images used in animation) 
+  */
+  rightSide=displayWidth;
+  floorZ=displayHeight/2-20;
+run_pos=new PVector(displayWidth/2,floorZ);
+s_pos=new PVector(displayWidth/2,displayHeight/2);
+iw=new ArrayList<IceWall>();
+velocity=new PVector(0,0);
+iceWall_num=4;
+g_force=90;
+
+shuriken_num=30;
+//playercol=new Collision("C:\\Users\\TC0C44772\\Desktop\\ninja_mash\\ninja_jump\\jump_fall\\fall0001.png",run_pos);
+playercol=new Collision("C:\\Users\\Matrix\\Documents\\Processing\\ninja_mash\\ImageCode\\animation\\ninja_jump\\jump_fall\\fall0001.png",run_pos);
+run=new Animate("C:\\Users\\Matrix\\Documents\\Processing\\ninja_mash\\ImageCode\\animation\\ninja_run\\run_left\\run000",15);
+ideal=new Animate("C:\\Users\\Matrix\\Documents\\Processing\\ninja_mash\\ImageCode\\animation\\ninja_ideal\\standing\\ideal000",34);
+nthrow=new Animate("C:\\Users\\Matrix\\Documents\\Processing\\ninja_mash\\ImageCode\\animation\\ninja_attack\\throw\\throw000",20);
+jump_rise=new Animate("C:\\Users\\Matrix\\Documents\\Processing\\ninja_mash\\ImageCode\\animation\\ninja_jump\\jump_rise\\rising000",1);
+jump_fall=new Animate("C:\\Users\\Matrix\\Documents\\Processing\\ninja_mash\\ImageCode\\animation\\ninja_jump\\jump_fall\\fall000",1);
+shuriken=new Animate("C:\\Users\\Matrix\\Documents\\Processing\\ninja_mash\\ImageCode\\animation\\ninja_attack\\shuriken000",1);
+restore=new Animate("C:\\Users\\Matrix\\Documents\\Processing\\ninja_mash\\ImageCode\\animation\\ninja_ideal\\restore\\Restore000",41);
+icethrow=new Animate("C:\\Users\\Matrix\\Documents\\Processing\\ninja_mash\\ImageCode\\animation\\ninja_attack\\iceWall\\Ice000",62);
+/*run=new Animate("C:\\Users\\TC0C44772\\Desktop\\ninja_mash\\ninja_run\\run_left\\run000",15);
+ideal=new Animate("C:\\Users\\TC0C44772\\Desktop\\ninja_mash\\ninja_ideal\\standing\\ideal000",34);
+attack=new Animate("C:\\Users\\TC0C44772\\Desktop\\ninja_mash\\ninja_attack\\attack1_0\\attack000",24);
+nthrow=new Animate("C:\\Users\\TC0C44772\\Desktop\\ninja_mash\\ninja_attack\\throw\\throw000",20);
+jump_rise=new Animate("C:\\Users\\TC0C44772\\Desktop\\ninja_mash\\ninja_jump\\jump_rise\\rising000",1);
+jump_fall=new Animate("C:\\Users\\TC0C44772\\Desktop\\ninja_mash\\ninja_jump\\jump_fall\\fall000",1);
+shuriken=new Animate("C:\\Users\\TC0C44772\\Desktop\\ninja_mash\\ninja_attack\\shuriken\\shuriken000",1);
+restore=new Animate("C:\\Users\\TC0C44772\\Desktop\\ninja_mash\\ninja_ideal\\restore\\Restore000",41);*/
+}
+
+/*function used for setting the velocity vector to zero after the run cycle has been comleted for optimizations 
+and also to make the animations look smooth when starting up*/
+public void setVelocityZero()
+{
+
+//velocity.x=velocity.x-(5);
+//if(velocity.x<0)
+velocity.x=0;
+velocity.y=0;
+//run_pos.x=run_pos.x-velocity.x;  
+}
+
+//this function provides the user with the current position of the player in the game
+public PVector getPlayerPosition()
+{
+return run_pos;
+}
+
+//PROVIDES THE CURRENT VELOCITY OF THE PLAYER IN THE GAME
+public PVector getPlayerVelocity()
+{
+return velocity;
+}
+
+//IMPLEMENTING THE AMOUNT OF PIXELS THE CHARACTER SHOULD MOVE IN ORDER TO REACH A PARTICULAR POSITION 
+//THE DIRECTION VARIABLE REDUCES THE AMOUNT OF CODE TO BE REWRITTEN AND DECIDES THE DIRECTION OF PLAYER ACCORDING TO THE KEY PRESS
+
+public void playerRun(int direction)
+{
+//left is -1
+//right is +1
+if(velocity.x>1000)
+velocity.x=1000;
+else
+velocity.x=(velocity.x)+200;
+run_pos.x=(run_pos.x+(direction*velocity.x*(1/frameRate)));
+
+}
+
+public void createCollision()
+{
+playercol.createCollisionBox();
+
+}
+
+public boolean checkCollision(PVector loc)
+{
+return(playercol.checkCollision(loc));
+}
+
+public void startJump()
+{
+j_force-=g_force;
+velocity.y=j_force;
+run_pos.y-=(velocity.y*(1/frameRate));
+}
+
+public void setShuriken()
+{
+s_pos.x=run_pos.x;
+s_pos.y=run_pos.y;
+}
+
+
+//Throw shuriken from players position to the far end of the screen and check for collisions
+public void throwShuriken(int direction)
+{
+s_pos.x+=(direction*(1500*1/frameRate));
+}
+
+
+//CHECK THE SIDES OF THE GAME WORLD SUCH THAT THE PLAYER NEVER MOVES OUT OF THE WORLD
+public boolean checkSides(PVector check_vector)
+{
+if(check_vector.x>=(rightSide))
+{
+check_vector.x=rightSide;
+return true;
+}
+else if(check_vector.x<=-5)
+{
+check_vector.x=-5;
+return true;
+}
+else 
+return false;
+}
+//CHECK THE FLOOR FOR COLLISION WHEN PLAYER FALLS or WHEN ITS MOVING TO BE ON A SAFESIDE
+public int checkFloor()
+{
+if(run_pos.y>=floorZ)
+{
+  j_force=0;
+  run_pos.y=floorZ;
+return 1;
+}
+else 
+return 0;
+}
+/*AFTER THIS PART EVERY FUNCTION IS USED FOR PLAYING THE NECESSARY ANIMATIONS
+CORRESPONDING TO THE PLAYER*/
+
+public void ninjaRun(char key_run)
+{
+
+if(key_run=='a'||key_run=='A')
+run.display(false,run_pos);
+
+else if(key_run=='d'||key_run=='D')
+{
+run.display(true,run_pos);
+}
+}
+
+public void ninjaIceWall(boolean b_left)
+{
+icethrow.display(!b_left,run_pos);
+}
+
+public void ninjaIdeal(boolean b_left)
+{ 
+ideal.display(!b_left,run_pos);
+}
+
+public void ninjaAttack(boolean b_left)
+{
+nthrow.display(!b_left,run_pos);
+
+}
+
+public void ninjaRestore(boolean b_left)
+{
+restore.display(!b_left,run_pos);
+}
+public void ninjaJumpRise(boolean b_left)
+{
+jump_rise.display(!b_left,run_pos);
+}
+
+public void ninjaShuriken()
+{
+  shuriken.display(false,s_pos);
+}
+
+public void ninjaJumpFall(boolean b_left)
+{
+jump_fall.display(!b_left,run_pos);
+}
+
+}

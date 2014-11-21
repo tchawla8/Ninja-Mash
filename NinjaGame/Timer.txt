@@ -1,0 +1,29 @@
+class Timer{
+  float sec1,sec2;
+  boolean reset;
+  public Timer()
+  {
+sec1=sec2=0;
+reset=false;
+  }
+  
+  //function to delay time and check if it is delayed
+boolean delayTime(int milli)
+{
+sec1=millis();
+if(!reset)
+{
+ sec2=sec1;
+reset=true;
+}
+
+if(sec1-sec2>milli)
+{
+reset=false;
+return true;
+}
+else
+{
+//text(str(abs(int((sec1-sec2)/1000)+1)),500,100);  for checking if the time is working correctly
+return false;
+}}}

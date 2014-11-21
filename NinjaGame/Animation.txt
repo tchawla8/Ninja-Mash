@@ -1,0 +1,59 @@
+
+class Animate 
+{
+private PImage img[];
+private String name;
+private int frame_count;
+private int frame;
+
+public Animate(String name,int frame_count)
+{
+this.frame_count=frame_count;
+this.name=name;
+loadImages();
+}
+
+public void loadImages()
+{
+img=new PImage[frame_count];
+for(int i=1;i<=frame_count;i++)
+{
+img[i-1]=loadImage(name+str(i)+".png");
+}
+}
+
+
+public boolean checkFrame(int fr)
+{
+if(this.frame==fr)
+return true;
+else
+return false;
+}
+public boolean checkAnimationEnd()
+{
+if(this.frame==this.frame_count-1)
+{
+return true;
+
+}
+else
+return false;
+}
+
+public void display(boolean b_flip,PVector position)
+{
+  this.frame=(this.frame+1) % this.frame_count;
+if(!b_flip)
+{
+image(img[frame],position.x,position.y);
+}
+else
+{
+  pushMatrix();
+scale(-1,1);
+image(img[frame],-position.x,position.y);
+popMatrix();
+}
+}
+}
